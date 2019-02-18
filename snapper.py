@@ -26,7 +26,7 @@ class SnapWindow(QMainWindow):
                                 # Also the size the window should be.
 
         QMainWindow.__init__(self)
-        self.setWindowTitle("Snapper")
+        self.setWindowTitle("Snap")
         self.cliplabel = QtWidgets.QLabel(self)
         self.cliplabel.show()
         self.cliplabel.setScaledContents(True)
