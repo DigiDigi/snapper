@@ -4,15 +4,9 @@
 import sys, time, subprocess
 
 from io import BytesIO
-import PIL.Image as Image
-from PySide2.QtGui import QClipboard
 from PySide2 import QtCore, QtWidgets, QtGui
-from PySide2.QtWidgets import QApplication, QMainWindow, QWidget, QPlainTextEdit, \
-    QSizePolicy, QFormLayout, QPushButton, QLineEdit, QInputDialog
+from PySide2.QtWidgets import QMainWindow, QInputDialog
 from PySide2.QtCore import QSize
-from PySide2.QtCore import QThread
-from PySide2.QtCore import QTimer
-from PySide2.QtCore import QMimeData
 
 shared = {}
 shared['cursor'] = QtGui.QCursor()
@@ -126,8 +120,7 @@ class SnapWindow(QMainWindow):
         elif action == action_close:
             self.close()
         elif action == action_rename:
-
-            name, a = QInputDialog.getText(self, "", "Name this window:")
+            name, tmp = QInputDialog.getText(self, "", "Name this window:")
             self.setWindowTitle(name)
             
     def save_copy(self):
