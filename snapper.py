@@ -112,6 +112,7 @@ class SnapWindow(QMainWindow):
     def contextMenuEvent(self, event):
         menu = QtWidgets.QMenu(self)
         action_rename = menu.addAction("Rename")
+        action_clipboard = menu.addAction("Copy to Clipboard (Again)")
         action_save = menu.addAction("Save Original")
         action_reset = menu.addAction("Reset to Original")
         action_frame = menu.addAction("Toggle Frame")        
@@ -119,6 +120,8 @@ class SnapWindow(QMainWindow):
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action == action_save:
             self.save_copy()
+        elif action == action_clipboard:
+            self.clipboard.setPixmap(self.original_snap)
         elif action == action_reset:
             self.reset_size()
         elif action == action_frame:
