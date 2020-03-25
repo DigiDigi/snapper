@@ -7,6 +7,10 @@ from io import BytesIO
 from PySide2 import QtCore, QtWidgets, QtGui
 from PySide2.QtWidgets import QMainWindow, QInputDialog
 from PySide2.QtCore import QSize
+from PySide2.QtCore import QMimeData
+from PySide2.QtGui import QDrag, QIcon
+from PySide2.QtCore import Qt
+from PySide2.QtCore import QIODevice, QByteArray, QBuffer
 
 shared = {}
 shared['cursor'] = QtGui.QCursor()
@@ -20,8 +24,9 @@ class SnapWindow(QMainWindow):
         self.app = app
         self.winsize = None     # None-Conditional toggle on resize.
                                 # Also the size the window should be.
-
         QMainWindow.__init__(self)
+        self.dragicon = QIcon.fromTheme("folder-new").pixmap(QSize(24,24))
+        self.imgdata = None
         self.setWindowTitle("Snap")
         self.cliplabel = QtWidgets.QLabel(self)
         self.cliplabel.show()
@@ -34,6 +39,7 @@ class SnapWindow(QMainWindow):
         p.setColor(self.backgroundRole(), QtCore.Qt.white)
         self.setPalette(p)
         self.hide()
+        self.setAcceptDrops(True)
     
     def load_from_image(self):
         self.flag_snapped = True
@@ -90,6 +96,19 @@ class SnapWindow(QMainWindow):
         super(SnapWindow, self).mousePressEvent(event)
         if event.button() == QtCore.Qt.MouseButton.LeftButton:
             self.scale_ratio()
+            self.QDrag = QDrag(self)
+            self.QMimeData = QMimeData()
+            self.imgdata = QByteArray()
+            imgbuffer = QBuffer(self.imgdata)
+            imgbuffer.open(QIODevice.WriteOnly)
+            
+            self.original_snap.save(imgbuffer, "PNG")
+            
+            self.QMimeData.setImageData(self.imgdata)
+            self.QMimeData.setData("image/png", self.imgdata)
+            self.QDrag.setMimeData(self.QMimeData)
+            self.QDrag.setPixmap(self.dragicon)
+            dropaction = self.QDrag.exec_(Qt.CopyAction)
             
     def contextMenuEvent(self, event):
         menu = QtWidgets.QMenu(self)
@@ -141,7 +160,7 @@ class SnapWindow(QMainWindow):
 def main():
     app = QtWidgets.QApplication(sys.argv)
     mainWin = SnapWindow(app, flags=None)
-    
+
     if len(sys.argv) < 2:
         subprocess.call(["gnome-screenshot", "-c", "-a"])
         shared['curpos'] = shared['cursor'].pos()
@@ -150,8 +169,8 @@ def main():
         shared['inputfp'] = sys.argv[1]
         print(shared['inputfp'])
         mainWin.load_from_image()
-
     sys.exit( app.exec_() )
+    
 
 if __name__ == '__main__':
     main()
