@@ -39,7 +39,6 @@ class SnapWindow(QMainWindow):
         p.setColor(self.backgroundRole(), QtCore.Qt.white)
         self.setPalette(p)
         self.hide()
-        self.setAcceptDrops(True)
     
     def load_from_image(self):
         self.flag_snapped = True
